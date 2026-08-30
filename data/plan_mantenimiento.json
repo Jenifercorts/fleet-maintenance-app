@@ -1,0 +1,70 @@
+{
+  "_comentario": "Plan de mantenimiento preventivo cíclico. Cada intervalo se repite cada N km durante toda la vida útil del vehículo (10.000, 20.000 ... 100.000.000 km y más). La app calcula el próximo vencimiento de cada intervalo según el kilometraje actual, sin necesidad de listar cada múltiplo.",
+  "ventanaAlertaKm": 5000,
+  "intervalos": [
+    {
+      "km": 10000,
+      "tareas": [
+        "Cambio de aceite de motor y filtro de aceite",
+        "Inspección general de niveles y fugas",
+        "Revisión básica de luces y frenos"
+      ]
+    },
+    {
+      "km": 20000,
+      "tareas": [
+        "Cambio de filtro de aire de motor",
+        "Revisión de sistema de frenos (pastillas/bandas)",
+        "Rotación de neumáticos"
+      ]
+    },
+    {
+      "km": 30000,
+      "tareas": [
+        "Cambio de filtro de combustible",
+        "Revisión de suspensión y dirección",
+        "Chequeo de batería y sistema eléctrico"
+      ]
+    },
+    {
+      "km": 40000,
+      "tareas": [
+        "Cambio de aceite de caja de cambios (transmisión)",
+        "Revisión de embrague",
+        "Cambio de filtro de aire de cabina"
+      ]
+    },
+    {
+      "km": 50000,
+      "tareas": [
+        "Cambio de refrigerante",
+        "Revisión de correas y tensores",
+        "Alineación y balanceo"
+      ]
+    },
+    {
+      "km": 60000,
+      "tareas": [
+        "Cambio de aceite de diferencial (eje trasero)",
+        "Revisión de sistema de escape y post-tratamiento Euro VI (SCR/AdBlue)",
+        "Inspección de turbo e inyectores"
+      ]
+    },
+    {
+      "km": 80000,
+      "tareas": [
+        "Cambio de filtro de DEF/Urea (SCR)",
+        "Revisión completa del sistema de frenos",
+        "Cambio de aceite de motor (ciclo extendido)"
+      ]
+    },
+    {
+      "km": 100000,
+      "tareas": [
+        "Overhaul mayor: motor, caja y diferencial",
+        "Revisión completa del sistema Euro VI (SCR-EGR-DPF)",
+        "Cambio de correas de distribución y accesorios"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,434 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Fleet Maintenance — Panel de Control de Flota</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%232f7dfa'/%3E%3Cstop offset='1' stop-color='%2300c2a8'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Ctext x='16' y='22' font-family='Arial, sans-serif' font-weight='700' font-size='14' fill='white' text-anchor='middle'%3EFM%3C/text%3E%3C/svg%3E">
+<link rel="stylesheet" href="assets/css/styles.css">
+</head>
+<body>
+<button id="mobile-nav-toggle" class="mobile-nav-toggle" title="Menú"><span data-icon="menu"></span></button>
+<div id="sidebar-backdrop" class="sidebar-backdrop"></div>
+<div class="app">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <button class="sidebar-toggle" id="sidebar-toggle" title="Colapsar menú"><span data-icon="chevron-left"></span></button>
+    <div class="brand">
+      <div class="brand-icon"><span data-icon="truck"></span></div>
+      <div class="brand-text">FLEET<br>MAINTENANCE<small>CONTROL DE FLOTA</small></div>
+    </div>
+    <div class="nav-item active" data-view="dashboard" title="Panel Principal"><span class="ico" data-icon="dashboard"></span><span class="nav-label">Panel Principal</span></div>
+    <div class="nav-item" data-view="vehiculos" title="Vehículos"><span class="ico" data-icon="truck"></span><span class="nav-label">Vehículos</span></div>
+    <div class="nav-item" data-view="inventario" title="Inventario"><span class="ico" data-icon="box"></span><span class="nav-label">Inventario</span></div>
+
+    <div class="nav-group">
+      <div class="nav-item nav-group-toggle" data-group="mantenimiento" title="Mantenimientos">
+        <span class="ico" data-icon="wrench"></span><span class="nav-label">Mantenimientos</span><span class="nav-caret" data-icon="chevron-left"></span>
+      </div>
+      <div class="nav-submenu" data-submenu="mantenimiento">
+        <div class="nav-item nav-sub" data-view="preventivos" title="Preventivos"><span class="ico" data-icon="wrench"></span><span class="nav-label">Preventivos</span></div>
+        <div class="nav-item nav-sub" data-view="correctivos" title="Correctivos"><span class="ico" data-icon="alert"></span><span class="nav-label">Correctivos</span></div>
+        <div class="nav-item nav-sub" data-view="historial" title="Historial"><span class="ico" data-icon="history"></span><span class="nav-label">Historial</span></div>
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-item nav-group-toggle" data-group="reportes" title="Reportes">
+        <span class="ico" data-icon="chart"></span><span class="nav-label">Reportes</span><span class="nav-caret" data-icon="chevron-left"></span>
+      </div>
+      <div class="nav-submenu" data-submenu="reportes">
+        <div class="nav-item nav-sub" data-view="kpis" title="KPIs"><span class="ico" data-icon="chart"></span><span class="nav-label">KPIs</span></div>
+        <div class="nav-item nav-sub" data-view="disponibilidad" title="Disponibilidad"><span class="ico" data-icon="check-circle"></span><span class="nav-label">Disponibilidad</span></div>
+        <div class="nav-item nav-sub hidden" data-view="costos" title="Costos Mes"><span class="ico" data-icon="dollar"></span><span class="nav-label">Costos Mes</span></div>
+      </div>
+    </div>
+
+    <div style="flex:1"></div>
+    <div class="nav-item" id="nav-reset" title="Vaciar datos"><span class="ico" data-icon="trash"></span><span class="nav-label">Vaciar datos</span></div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+
+    <!-- ===================== DASHBOARD ===================== -->
+    <section id="view-dashboard" class="view">
+      <div class="topbar">
+        <div>
+          <h1>Panel de Control de Flota</h1>
+          <div class="sub">Fleet Maintenance · datos guardados en este navegador</div>
+        </div>
+        <div class="top-actions">
+          <div class="icon-btn" id="btn-theme-toggle" title="Cambiar tema"><span data-icon="moon"></span></div>
+          <div class="icon-btn" id="btn-settings" title="Configuración"><span data-icon="settings"></span></div>
+          <div class="icon-btn" id="btn-notifications" title="Alertas"><span data-icon="bell"></span><span class="dot hidden" id="notif-dot"></span></div>
+        </div>
+      </div>
+
+      <div class="kpis">
+        <div class="kpi blue">
+          <div class="kpi-top"><span class="kpi-icon" data-icon="truck"></span><span class="label">Vehículos Activos</span></div>
+          <div class="value" id="kpi-vehiculos">0</div>
+        </div>
+        <div class="kpi amber">
+          <div class="kpi-top"><span class="kpi-icon" data-icon="wrench"></span><span class="label">Preventivos Pendientes</span></div>
+          <div class="value" id="kpi-preventivos">0</div>
+        </div>
+        <div class="kpi red">
+          <div class="kpi-top"><span class="kpi-icon" data-icon="alert"></span><span class="label">Correctivos en Curso</span></div>
+          <div class="value" id="kpi-correctivos">0</div>
+        </div>
+        <div class="kpi amber">
+          <div class="kpi-top"><span class="kpi-icon" data-icon="shield"></span><span class="label">Documentos por Vencer</span></div>
+          <div class="value" id="kpi-documentos">0</div>
+        </div>
+        <div class="kpi teal hidden">
+          <div class="kpi-top"><span class="kpi-icon" data-icon="dollar"></span><span class="label">Costos Mes</span></div>
+          <div class="value" id="kpi-costos">$0</div>
+        </div>
+      </div>
+
+      <div class="panel" id="alertas-panel" style="margin-bottom:18px;">
+        <h3><span data-icon="alert"></span> Alertas Importantes <span class="sub" id="alertas-count-label" style="margin-left:auto;font-weight:400;"></span></h3>
+        <div id="alertas-list"></div>
+      </div>
+
+      <div class="toolbar">
+        <div class="search"><span data-icon="search"></span><input type="text" id="search-input" placeholder="Buscar vehículo por placa, marca o modelo..."></div>
+        <select id="select-current-vehicle"></select>
+        <select id="filter-estado">
+          <option value="">Todos los estados</option>
+          <option value="Operativo">Operativo</option>
+          <option value="En Taller">En Taller</option>
+          <option value="Fuera de Servicio">Fuera de Servicio</option>
+        </select>
+      </div>
+
+      <div class="vehicle-card" id="vehicle-card">
+        <!-- rendered by JS -->
+      </div>
+
+      <div class="panels">
+        <div class="panel">
+          <h3><span data-icon="wrench"></span> Solicitar Mantenimiento Preventivo</h3>
+          <ul class="task-list" id="preventivo-task-list"></ul>
+          <div class="row2">
+            <div class="field">
+              <label>Mecánico asignado</label>
+              <input type="text" id="prev-mecanico" placeholder="Nombre del mecánico">
+            </div>
+            <div class="field">
+              <label>Prioridad</label>
+              <select id="prev-prioridad">
+                <option value="media">Media</option>
+                <option value="alta">Alta</option>
+                <option value="baja">Baja</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Fecha estimada</label>
+            <input type="date" id="prev-fecha">
+          </div>
+          <div class="field">
+            <label>Costo estimado (USD)</label>
+            <input type="number" id="prev-costo" placeholder="0">
+          </div>
+          <div class="field">
+            <label>Notas adicionales</label>
+            <textarea id="prev-notas" placeholder="Ej: revisar también ruido en suspensión trasera..."></textarea>
+          </div>
+          <button class="btn primary block" id="btn-agendar-cita">AGENDAR CITA</button>
+        </div>
+
+        <div class="panel">
+          <h3><span data-icon="alert"></span> Reportar Mantenimiento Correctivo</h3>
+          <div class="field">
+            <label>Vehículo</label>
+            <input type="text" id="corr-vehiculo-display" disabled>
+          </div>
+          <div class="field">
+            <label>Describe el problema</label>
+            <textarea id="corr-descripcion" placeholder="Ej: Fuga de aire en sistema de frenos..."></textarea>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label>Prioridad</label>
+              <select id="corr-prioridad">
+                <option value="alta">Alta</option>
+                <option value="media">Media</option>
+                <option value="baja">Baja</option>
+              </select>
+            </div>
+            <div class="field">
+              <label>Estado</label>
+              <select id="corr-estado">
+                <option value="pendiente">Pendiente</option>
+                <option value="en-curso">En Curso</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label>Costo estimado (USD)</label>
+            <input type="number" id="corr-costo" placeholder="0">
+          </div>
+          <div class="field">
+            <label>Adjuntar fotos</label>
+            <div class="photo-attach" id="corr-photo-attach">
+              <label class="add-photo-btn" for="corr-photo-input">+</label>
+              <input type="file" id="corr-photo-input" accept="image/*" class="hidden" multiple>
+            </div>
+          </div>
+          <button class="btn danger block" id="btn-ingresar-correctivo">INGRESAR CORRECTIVO</button>
+        </div>
+      </div>
+
+      <div class="table-wrap">
+        <div class="table-head">
+          <h3>Seguimiento de Mantenimientos Activos</h3>
+          <span class="sub" id="table-count-label"></span>
+        </div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Orden</th><th>Vehículo</th><th>Tipo</th><th>Descripción</th>
+                <th>Prioridad</th><th>Mecánico</th><th>Fecha Estimada</th>
+                <th>Costo Est.</th><th>Estado</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="records-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== VEHICULOS ===================== -->
+    <section id="view-vehiculos" class="view hidden">
+      <div class="topbar">
+        <div>
+          <h1>Vehículos</h1>
+          <div class="sub" id="vehiculos-count-label">0 / 200 vehículos registrados</div>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="search"><span data-icon="search"></span><input type="text" id="search-vehiculos" placeholder="Buscar por placa, marca o modelo..."></div>
+        <label class="chk"><input type="checkbox" id="chk-show-hidden"> Mostrar ocultos</label>
+        <div class="toolbar-file-actions">
+          <button class="btn primary" id="btn-add-vehiculo">+ Agregar Vehículo</button>
+          <button class="btn" id="btn-import-csv"><span data-icon="upload"></span> Importar Flota (CSV)</button>
+          <button class="btn" id="btn-export-csv"><span data-icon="download"></span> Exportar CSV</button>
+          <button class="btn ghost" id="btn-plantilla-csv"><span data-icon="doc"></span> Plantilla CSV</button>
+        </div>
+      </div>
+      <div class="toolbar">
+        <div class="sub" style="flex:1;">
+          <b style="color:var(--text);">Actualizar kilometraje por archivo:</b> descarga la plantilla con las placas actuales, actualiza la columna de km y vuelve a importarla — solo se actualiza el kilometraje, nada más.
+        </div>
+        <div class="toolbar-file-actions">
+          <button class="btn ghost" id="btn-plantilla-km"><span data-icon="doc"></span> Plantilla KM</button>
+          <button class="btn primary" id="btn-update-km-csv"><span data-icon="upload"></span> Actualizar KM (CSV)</button>
+        </div>
+      </div>
+      <div class="vgrid" id="vgrid"></div>
+    </section>
+
+    <!-- ===================== INVENTARIO ===================== -->
+    <section id="view-inventario" class="view hidden">
+      <div class="topbar">
+        <div><h1>Inventario</h1><div class="sub">Herramientas y consumibles en stock (filtros, correas, bandas, tornillería, etc.)</div></div>
+      </div>
+      <div class="kpis">
+        <div class="kpi blue"><div class="kpi-top"><span class="kpi-icon" data-icon="box"></span><span class="label">Total de ítems</span></div><div class="value" id="inv-kpi-total">0</div></div>
+        <div class="kpi red"><div class="kpi-top"><span class="kpi-icon" data-icon="alert"></span><span class="label">Stock bajo</span></div><div class="value" id="inv-kpi-bajo">0</div></div>
+        <div class="kpi amber"><div class="kpi-top"><span class="kpi-icon" data-icon="wrench"></span><span class="label">Herramientas</span></div><div class="value" id="inv-kpi-herramientas">0</div></div>
+        <div class="kpi teal"><div class="kpi-top"><span class="kpi-icon" data-icon="box"></span><span class="label">Consumibles</span></div><div class="value" id="inv-kpi-consumibles">0</div></div>
+      </div>
+      <div class="toolbar">
+        <div class="search"><span data-icon="search"></span><input type="text" id="search-inventario" placeholder="Buscar por nombre..."></div>
+        <select id="filter-inventario-categoria">
+          <option value="">Todas las categorías</option>
+          <option value="herramienta">Herramienta</option>
+          <option value="consumible">Consumible</option>
+        </select>
+        <div class="toolbar-file-actions">
+          <button class="btn primary" id="btn-add-inventario">+ Agregar Ítem</button>
+          <button class="btn" id="btn-import-inventario-csv"><span data-icon="upload"></span> Importar CSV</button>
+          <button class="btn" id="btn-export-inventario-csv"><span data-icon="download"></span> Exportar CSV</button>
+          <button class="btn ghost" id="btn-plantilla-inventario-csv"><span data-icon="doc"></span> Plantilla CSV</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>Ítems en stock</h3><span class="sub" id="inventario-count-label"></span></div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Nombre</th><th>Categoría</th><th>Cantidad</th><th>Unidad</th><th>Mínimo</th><th>Estado</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="inventario-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== PREVENTIVOS ===================== -->
+    <section id="view-preventivos" class="view hidden">
+      <div class="topbar">
+        <div>
+          <h1>Preventivos</h1>
+          <div class="sub">Alertas calculadas automáticamente según kilometraje e intervalos</div>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>Estado de mantenimiento preventivo por vehículo</h3></div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Placa</th><th>Vehículo</th><th>Km Actual</th><th>Próximo Vencimiento</th><th>Km Restantes</th><th>Tareas</th><th>Estado</th><th>Acción</th></tr>
+            </thead>
+            <tbody id="preventivos-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== CORRECTIVOS ===================== -->
+    <section id="view-correctivos" class="view hidden">
+      <div class="topbar">
+        <div><h1>Correctivos</h1><div class="sub">Reportes de fallas y reparaciones no programadas</div></div>
+        <button class="btn danger" id="btn-nuevo-correctivo-modal">+ Nuevo Correctivo</button>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>Todos los correctivos</h3></div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Orden</th><th>Vehículo</th><th>Descripción</th><th>Prioridad</th><th>Fecha</th><th>Costo</th><th>Estado</th><th>Acciones</th></tr>
+            </thead>
+            <tbody id="correctivos-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== HISTORIAL ===================== -->
+    <section id="view-historial" class="view hidden">
+      <div class="topbar">
+        <div><h1>Historial de mantenimientos</h1><div class="sub">Registro completo por vehículo, incluye lo ya completado — nada se borra al terminarlo</div></div>
+      </div>
+      <div class="toolbar">
+        <div class="search"><span data-icon="search"></span><input type="text" id="search-historial" placeholder="Buscar en la descripción..."></div>
+        <select id="historial-vehiculo">
+          <option value="">Todos los vehículos</option>
+        </select>
+        <select id="historial-tipo">
+          <option value="">Todos los tipos</option>
+          <option value="preventivo">Preventivo</option>
+          <option value="correctivo">Correctivo</option>
+        </select>
+        <select id="historial-estado">
+          <option value="">Todos los estados</option>
+          <option value="pendiente">Pendiente</option>
+          <option value="en-curso">En Curso</option>
+          <option value="completado">Completado</option>
+        </select>
+        <div class="toolbar-file-actions">
+          <button class="btn ghost" id="btn-historial-pdf"><span data-icon="doc"></span> Descargar PDF</button>
+          <button class="btn ghost" id="btn-historial-excel"><span data-icon="table"></span> Descargar Excel</button>
+        </div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>Todos los registros</h3><span class="sub" id="historial-count-label"></span></div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr>
+                <th>Orden</th><th>Vehículo</th><th>Tipo</th><th>Descripción</th>
+                <th>Prioridad</th><th>Mecánico</th><th>Fecha</th>
+                <th>Costo</th><th>Estado</th><th>Acciones</th>
+              </tr>
+            </thead>
+            <tbody id="historial-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== KPIS ===================== -->
+    <section id="view-kpis" class="view hidden">
+      <div class="topbar">
+        <div><h1>KPIs de la Flota</h1><div class="sub">Indicadores clave calculados en tiempo real a partir de tus vehículos y mantenimientos</div></div>
+      </div>
+      <div id="kpis-content"></div>
+    </section>
+
+    <!-- ===================== DISPONIBILIDAD ===================== -->
+    <section id="view-disponibilidad" class="view hidden">
+      <div class="topbar">
+        <div><h1>Disponibilidad de Flota</h1><div class="sub" id="disp-updated-label">Para logística: con qué vehículos se puede contar ahora mismo para la operación</div></div>
+      </div>
+      <div class="kpis" style="grid-template-columns:repeat(2,1fr);margin-bottom:14px;">
+        <div class="kpi green"><div class="kpi-top"><span class="kpi-icon" data-icon="truck"></span><span class="label">Operativos</span></div><div class="value" id="disp-kpi-operativos">0</div></div>
+        <div class="kpi red"><div class="kpi-top"><span class="kpi-icon" data-icon="truck"></span><span class="label">No Operativos</span></div><div class="value" id="disp-kpi-no-operativos">0</div></div>
+      </div>
+      <div class="kpis" style="grid-template-columns:repeat(3,1fr);">
+        <div class="kpi green"><div class="kpi-top"><span class="kpi-icon" data-icon="check-circle"></span><span class="label">Disponibles</span></div><div class="value" id="disp-kpi-disponibles">0</div></div>
+        <div class="kpi amber"><div class="kpi-top"><span class="kpi-icon" data-icon="alert"></span><span class="label">Disponibles con alerta</span></div><div class="value" id="disp-kpi-alerta">0</div></div>
+        <div class="kpi red"><div class="kpi-top"><span class="kpi-icon" data-icon="alert"></span><span class="label">No Disponibles</span></div><div class="value" id="disp-kpi-no-disponibles">0</div></div>
+      </div>
+      <div class="toolbar">
+        <div class="search"><span data-icon="search"></span><input type="text" id="search-disponibilidad" placeholder="Buscar por placa, marca o modelo..."></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>Listado para logística</h3></div>
+        <div class="table-scroll">
+          <table>
+            <thead>
+              <tr><th>Placa</th><th>Vehículo</th><th>Conductor(es)</th><th>Km Actual</th><th>Estado</th><th>Motivo</th><th>Acción</th></tr>
+            </thead>
+            <tbody id="disponibilidad-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- ===================== COSTOS ===================== -->
+    <section id="view-costos" class="view hidden">
+      <div class="topbar">
+        <div><h1>Costos del Mes</h1><div class="sub" id="costos-mes-label"></div></div>
+      </div>
+      <div class="kpis" style="grid-template-columns:repeat(3,1fr);">
+        <div class="kpi teal"><div class="kpi-top"><span class="kpi-icon" data-icon="dollar"></span><span class="label">Total del mes</span></div><div class="value" id="costos-total">$0</div></div>
+        <div class="kpi blue"><div class="kpi-top"><span class="kpi-icon" data-icon="wrench"></span><span class="label">Preventivos</span></div><div class="value" id="costos-preventivo">$0</div></div>
+        <div class="kpi red"><div class="kpi-top"><span class="kpi-icon" data-icon="alert"></span><span class="label">Correctivos</span></div><div class="value" id="costos-correctivo">$0</div></div>
+      </div>
+      <div class="panel" style="margin-bottom:18px;">
+        <h3>Costo por vehículo (mes actual)</h3>
+        <div id="cost-chart"></div>
+      </div>
+      <div class="table-wrap">
+        <div class="table-head"><h3>Detalle de costos</h3></div>
+        <div class="table-scroll">
+          <table>
+            <thead><tr><th>Orden</th><th>Vehículo</th><th>Tipo</th><th>Descripción</th><th>Fecha</th><th>Costo</th></tr></thead>
+            <tbody id="costos-tbody"></tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <footer class="credits">Fleet Maintenance · prototipo de gestión de mantenimiento de flota</footer>
+  </main>
+</div>
+
+<div id="modal-root"></div>
+<div class="toast-wrap" id="toast-wrap"></div>
+<input type="file" id="csv-file-input" accept=".csv" class="hidden">
+<input type="file" id="km-csv-file-input" accept=".csv" class="hidden">
+<input type="file" id="inventario-csv-file-input" accept=".csv" class="hidden">
+
+<script src="assets/js/icons.js"></script>
+<script src="assets/js/app.js"></script>
+</body>
+</html>
