@@ -169,6 +169,26 @@
               </select>
             </div>
           </div>
+          <div class="row2">
+            <div class="field">
+              <label>Proveedor / Taller</label>
+              <input type="text" id="corr-proveedor" placeholder="Ej: Servicol Automotriz SAS">
+            </div>
+            <div class="field">
+              <label>Categoría</label>
+              <input type="text" id="corr-categoria" placeholder="Ej: Frenos, Motor, Latonería…">
+            </div>
+          </div>
+          <div class="row2">
+            <div class="field">
+              <label>Nº de factura</label>
+              <input type="text" id="corr-factura" placeholder="Opcional">
+            </div>
+            <div class="field">
+              <label>Fecha de emisión</label>
+              <input type="date" id="corr-fecha-emision">
+            </div>
+          </div>
           <div class="field">
             <label>Costo estimado (USD)</label>
             <input type="number" id="corr-costo" placeholder="0">
@@ -304,7 +324,7 @@
         <div class="table-scroll">
           <table>
             <thead>
-              <tr><th>Orden</th><th>Vehículo</th><th>Descripción</th><th>Prioridad</th><th>Fecha</th><th>Costo</th><th>Estado</th><th>Acciones</th></tr>
+              <tr><th>Orden</th><th>Vehículo</th><th>Descripción</th><th>Proveedor</th><th>Nº Factura</th><th>Prioridad</th><th>Fecha</th><th>Costo</th><th>Estado</th><th>Acciones</th></tr>
             </thead>
             <tbody id="correctivos-tbody"></tbody>
           </table>

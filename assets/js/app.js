@@ -564,14 +564,23 @@ function ingresarCorrectivo() {
   const prioridad = document.getElementById("corr-prioridad").value;
   const estado = document.getElementById("corr-estado").value;
   const costo = Number(document.getElementById("corr-costo").value) || 0;
+  const proveedor = document.getElementById("corr-proveedor").value.trim();
+  const categoria = document.getElementById("corr-categoria").value.trim();
+  const numeroFactura = document.getElementById("corr-factura").value.trim();
+  const fechaEmision = document.getElementById("corr-fecha-emision").value || "";
 
   records.push({
     id: nextOrderId(), vehicleId: vehicle.id, tipo: "correctivo", descripcion,
-    prioridad, mecanico: "", estado, fecha: todayIso(), costo, fotos: pendingCorrectivoPhotos.slice()
+    prioridad, mecanico: "", estado, fecha: todayIso(), costo, fotos: pendingCorrectivoPhotos.slice(),
+    proveedor, categoria, numeroFactura, fechaEmision
   });
   save(LS_RECORDS, records);
   document.getElementById("corr-descripcion").value = "";
   document.getElementById("corr-costo").value = "";
+  document.getElementById("corr-proveedor").value = "";
+  document.getElementById("corr-categoria").value = "";
+  document.getElementById("corr-factura").value = "";
+  document.getElementById("corr-fecha-emision").value = "";
   pendingCorrectivoPhotos = [];
   renderCorrectivoPhotoThumbs();
   toast("Correctivo ingresado", "ok");
@@ -656,6 +665,14 @@ function openEditRecordModal(rec) {
       <div class="field"><label>Mecánico</label><input id="e-mecanico" value="${escapeHtml(rec.mecanico || "")}"></div>
       <div class="field"><label>Fecha</label><input type="date" id="e-fecha" value="${rec.fecha || ""}"></div>
     </div>
+    <div class="row2">
+      <div class="field"><label>Proveedor / Taller</label><input id="e-proveedor" value="${escapeHtml(rec.proveedor || "")}"></div>
+      <div class="field"><label>Categoría</label><input id="e-categoria" value="${escapeHtml(rec.categoria || "")}"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Nº de factura</label><input id="e-factura" value="${escapeHtml(rec.numeroFactura || "")}"></div>
+      <div class="field"><label>Fecha de emisión</label><input type="date" id="e-fecha-emision" value="${rec.fechaEmision || ""}"></div>
+    </div>
     <div class="field"><label>Costo estimado (USD)</label><input type="number" id="e-costo" value="${rec.costo || 0}"></div>
     <div class="field"><label>Notas adicionales</label><textarea id="e-notas">${escapeHtml(rec.notas || "")}</textarea></div>
     <button class="btn primary block" id="e-save">Guardar cambios</button>
@@ -668,6 +685,10 @@ function openEditRecordModal(rec) {
     rec.estado = document.getElementById("e-estado").value;
     rec.mecanico = document.getElementById("e-mecanico").value.trim();
     rec.fecha = document.getElementById("e-fecha").value || rec.fecha;
+    rec.proveedor = document.getElementById("e-proveedor").value.trim();
+    rec.categoria = document.getElementById("e-categoria").value.trim();
+    rec.numeroFactura = document.getElementById("e-factura").value.trim();
+    rec.fechaEmision = document.getElementById("e-fecha-emision").value || "";
     rec.costo = Number(document.getElementById("e-costo").value) || 0;
     rec.notas = document.getElementById("e-notas").value.trim();
     save(LS_RECORDS, records);
@@ -1118,7 +1139,7 @@ function renderPreventivosView() {
 function renderCorrectivosView() {
   const tbody = document.getElementById("correctivos-tbody");
   const list = records.filter((r) => r.tipo === "correctivo").sort((a, b) => (a.fecha < b.fecha ? 1 : -1));
-  if (list.length === 0) { tbody.innerHTML = `<tr><td colspan="8" class="empty-state">Sin correctivos registrados</td></tr>`; return; }
+  if (list.length === 0) { tbody.innerHTML = `<tr><td colspan="10" class="empty-state">Sin correctivos registrados</td></tr>`; return; }
   tbody.innerHTML = list.map((r) => {
     const vehicle = vehicles.find((v) => v.id === r.vehicleId) || { placa: "—" };
     const flag = r.prioridad === "alta" ? "alta" : r.prioridad === "baja" ? "baja" : "media";
@@ -1126,6 +1147,8 @@ function renderCorrectivosView() {
     return `<tr data-id="${r.id}">
       <td>${r.id}</td><td>${escapeHtml(vehicle.placa)}</td>
       <td title="${escapeHtml(tooltip)}">${escapeHtml(r.descripcion.length > 50 ? r.descripcion.slice(0, 50) + "…" : r.descripcion)}${r.notas ? ` <span class="note-flag" data-icon="doc" title="Tiene notas adicionales"></span>` : ""}</td>
+      <td>${escapeHtml(r.proveedor || "—")}</td>
+      <td>${escapeHtml(r.numeroFactura || "—")}</td>
       <td><span class="flag ${flag}"></span>${cap(r.prioridad)}</td>
       <td>${r.fecha}</td><td>${fmtMoney(r.costo)}</td>
       <td><span class="status-text ${r.estado}">${statusLabel(r.estado)}</span></td>
