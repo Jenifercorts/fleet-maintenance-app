@@ -698,6 +698,88 @@ function openEditRecordModal(rec) {
   });
 }
 
+/* ---------------- Nueva Orden de Trabajo (OT) unificada ---------------- */
+document.addEventListener("click", (e) => {
+  if (e.target && e.target.id === "btn-nueva-ot") openNuevaOTModal();
+});
+
+function openNuevaOTModal() {
+  if (vehicles.length === 0) { toast("Registra un vehículo antes de crear una OT", "danger"); return; }
+  const vehiculoOptions = vehicles.map((v) => `<option value="${v.id}" ${v.id === currentVehicleId ? "selected" : ""}>${escapeHtml(v.placa)} — ${escapeHtml(v.marca)} ${escapeHtml(v.modelo)}</option>`).join("");
+  openModal(`
+    <h2>Nueva Orden de Trabajo</h2>
+    <div class="field"><label>Vehículo</label>
+      <select id="ot-vehiculo">${vehiculoOptions}</select>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Tipo</label>
+        <select id="ot-tipo">
+          <option value="correctivo">Correctivo</option>
+          <option value="preventivo">Preventivo</option>
+        </select>
+      </div>
+      <div class="field"><label>Fecha de la OT</label><input type="date" id="ot-fecha" value="${todayIso()}"></div>
+    </div>
+    <div class="field"><label>Descripción</label><textarea id="ot-descripcion" placeholder="Ej: Fuga de aire en sistema de frenos..."></textarea></div>
+    <div class="row2">
+      <div class="field"><label>Prioridad</label>
+        <select id="ot-prioridad">
+          <option value="alta">Alta</option>
+          <option value="media" selected>Media</option>
+          <option value="baja">Baja</option>
+        </select>
+      </div>
+      <div class="field"><label>Estado</label>
+        <select id="ot-estado">
+          <option value="pendiente">Pendiente</option>
+          <option value="en-curso">En Curso</option>
+          <option value="completado">Completado</option>
+        </select>
+      </div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Proveedor / Taller</label><input id="ot-proveedor" placeholder="Ej: Servicol Automotriz SAS"></div>
+      <div class="field"><label>Categoría</label><input id="ot-categoria" placeholder="Ej: Frenos, Motor, Latonería…"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Nº de factura</label><input id="ot-factura" placeholder="Opcional"></div>
+      <div class="field"><label>Fecha de emisión</label><input type="date" id="ot-fecha-emision"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Responsable / Mecánico</label><input id="ot-mecanico" placeholder="Opcional"></div>
+      <div class="field"><label>Costo estimado (USD)</label><input type="number" id="ot-costo" placeholder="0"></div>
+    </div>
+    <div class="field"><label>Notas adicionales</label><textarea id="ot-notas"></textarea></div>
+    <button class="btn primary block" id="ot-save">Crear Orden de Trabajo</button>
+  `);
+  document.getElementById("ot-save").addEventListener("click", () => {
+    const vehicleId = document.getElementById("ot-vehiculo").value;
+    const descripcion = document.getElementById("ot-descripcion").value.trim();
+    if (!descripcion) { toast("Describe el trabajo antes de crear la OT", "danger"); return; }
+    records.push({
+      id: nextOrderId(),
+      vehicleId,
+      tipo: document.getElementById("ot-tipo").value,
+      descripcion,
+      prioridad: document.getElementById("ot-prioridad").value,
+      estado: document.getElementById("ot-estado").value,
+      fecha: document.getElementById("ot-fecha").value || todayIso(),
+      mecanico: document.getElementById("ot-mecanico").value.trim(),
+      proveedor: document.getElementById("ot-proveedor").value.trim(),
+      categoria: document.getElementById("ot-categoria").value.trim(),
+      numeroFactura: document.getElementById("ot-factura").value.trim(),
+      fechaEmision: document.getElementById("ot-fecha-emision").value || "",
+      costo: Number(document.getElementById("ot-costo").value) || 0,
+      notas: document.getElementById("ot-notas").value.trim(),
+      fotos: [],
+    });
+    save(LS_RECORDS, records);
+    closeModal();
+    toast("Orden de trabajo creada", "ok");
+    renderAll();
+  });
+}
+
 /* ---------------- Vista: Vehículos ---------------- */
 function renderVehiculosView() {
   const ocultos = vehicles.filter((v) => v.oculto).length;
